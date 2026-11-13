@@ -6,13 +6,47 @@ const itemsLeft = document.getElementById("items-left");
 const filters = document.querySelectorAll(".filter");
 const clearCompletedBtn = document.getElementById("clear-completed");
 
-// State
-let todos = [];
-let currentFilter = "all";
-let nextId = 1;
-let clickTimer = null; // used to tell a single click from a double-click
+// Storage helpers
+const STORAGE_KEY = "todos";
+const FILTER_KEY = "filter";
+const VALID_FILTERS = ["all", "active", "completed"];
+const DOUBLE_CLICK_DELAY_MS = 220;
 
-// Functions
+function saveToStorage(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+}
+
+function getFromStorage(key, defaultValue = null) {
+    const data = localStorage.getItem(key);
+    if (data === null) return defaultValue;
+    try {
+        return JSON.parse(data);
+    } catch {
+        return defaultValue; // bad JSON: don't crash
+    }
+}
+
+// State: load ONCE, when the app starts
+let todos = getFromStorage(STORAGE_KEY, []);
+if (!Array.isArray(todos)) {
+    todos = []; // valid JSON but the wrong shape
+}
+
+let currentFilter = getFromStorage(FILTER_KEY, "all");
+if (!VALID_FILTERS.includes(currentFilter)) {
+    currentFilter = "all";
+}
+
+let clickTimer = null; // tells a single click from a double-click
+
+// One place that saves and redraws
+function commit() {
+    saveToStorage(STORAGE_KEY, todos);
+    saveToStorage(FILTER_KEY, currentFilter);
+    render();
+}
+
+// Rendering
 function createTodoElement(todo) {
     const li = document.createElement("li");
     li.className = "todo-item" + (todo.completed ? " completed" : "");
@@ -20,7 +54,7 @@ function createTodoElement(todo) {
 
     const text = document.createElement("span");
     text.className = "todo-text";
-    text.textContent = todo.text; // textContent, never innerHTML: user input stays plain text
+    text.textContent = todo.text; // textContent, never innerHTML
 
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "delete-btn";
@@ -33,69 +67,75 @@ function createTodoElement(todo) {
 }
 
 function getVisibleTodos() {
-    if (currentFilter === "active") return todos.filter(t => !t.completed);
-    if (currentFilter === "completed") return todos.filter(t => t.completed);
+    if (currentFilter === "active") return todos.filter((t) => !t.completed);
+    if (currentFilter === "completed") return todos.filter((t) => t.completed);
     return todos;
 }
 
-function renderTodos() {
-    todoList.innerHTML = ""; // clear the list (safe: no user data involved)
+function updateStats() {
+    const remaining = todos.filter((t) => !t.completed).length;
+    itemsLeft.textContent = `${remaining} ${remaining === 1 ? "item" : "items"} left`;
+    clearCompletedBtn.disabled = !todos.some((t) => t.completed);
+}
+
+function render() {
+    todoList.innerHTML = "";
 
     const visible = getVisibleTodos();
 
     if (visible.length === 0) {
         const empty = document.createElement("li");
         empty.className = "empty-message";
-        empty.textContent = todos.length === 0 ? "Nothing to do yet. Add a task above!" : `No ${currentFilter} tasks.`;
+        empty.textContent =
+            todos.length === 0 ? "Nothing to do yet. Add a task above!" : `No ${currentFilter} tasks.`;
         todoList.appendChild(empty);
     } else {
-        visible.forEach(todo => todoList.appendChild(createTodoElement(todo)));
+        visible.forEach((todo) => todoList.appendChild(createTodoElement(todo)));
     }
+
+    // Show the saved filter as active (the HTML hard-codes "All")
+    filters.forEach((btn) => btn.classList.toggle("active", btn.dataset.filter === currentFilter));
 
     updateStats();
 }
 
+// Actions: change the array, then commit()
 function addTodo(text) {
     const trimmed = text.trim();
-    if (!trimmed) return false; // the `required` attribute allows "   ", so check here too
+    if (!trimmed) return false; // `required` allows "   ", so check here too
 
-    todos.push({ id: nextId++, text: trimmed, completed: false });
-    renderTodos();
+    todos = [
+        ...todos,
+        { id: Date.now(), text: trimmed, completed: false, createdAt: new Date().toISOString() },
+    ];
+    commit();
     return true;
 }
 
 function toggleTodo(id) {
-    const todo = todos.find(t => t.id === id);
-    if (todo) todo.completed = !todo.completed;
-    renderTodos();
+    todos = todos.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t));
+    commit();
 }
 
 function deleteTodo(id) {
-    todos = todos.filter(t => t.id !== id);
-    renderTodos();
-}
-
-function updateStats() {
-    const remaining = todos.filter(t => !t.completed).length;
-    itemsLeft.textContent = `${remaining} ${remaining === 1 ? "item" : "items"} left`;
-    clearCompletedBtn.disabled = !todos.some(t => t.completed);
+    todos = todos.filter((t) => t.id !== id);
+    commit();
 }
 
 function filterTodos(filter) {
     currentFilter = filter;
-    filters.forEach(btn => btn.classList.toggle("active", btn.dataset.filter === filter));
-    renderTodos();
+    commit();
 }
 
 function clearCompleted() {
-    todos = todos.filter(t => !t.completed);
-    renderTodos();
+    todos = todos.filter((t) => !t.completed);
+    commit();
 }
 
 // Bonus: edit a task in place
 function startEdit(li) {
     const id = Number(li.dataset.id);
-    const todo = todos.find(t => t.id === id);
+    const todo = todos.find((t) => t.id === id);
     const label = li.querySelector(".todo-text");
     if (!todo || !label) return;
 
@@ -107,25 +147,27 @@ function startEdit(li) {
     editInput.focus();
     editInput.select();
 
-    let finished = false; // blur fires after Enter/Escape re-render, so guard against running twice
+    let finished = false; // blur fires after the re-render, so guard against running twice
 
     function finish(save) {
         if (finished) return;
         finished = true;
 
-        if (save) {
-            const newText = editInput.value.trim();
-            if (newText) {
-                todo.text = newText;
-            } else {
-                deleteTodo(id); // saving an empty edit removes the task
-                return;
-            }
+        if (!save) {
+            render();
+            return;
         }
-        renderTodos();
+
+        const newText = editInput.value.trim();
+        if (newText) {
+            todos = todos.map((t) => (t.id === id ? { ...t, text: newText } : t));
+            commit();
+        } else {
+            deleteTodo(id); // saving an empty edit removes the task
+        }
     }
 
-    editInput.addEventListener("keydown", event => {
+    editInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter") finish(true);
         if (event.key === "Escape") finish(false);
     });
@@ -145,9 +187,9 @@ form.addEventListener("submit", function (event) {
 todoList.addEventListener("click", function (event) {
     const li = event.target.closest(".todo-item");
     if (!li) return;
-    if (event.target.classList.contains("edit-input")) return; // clicking inside the edit box
+    if (event.target.classList.contains("edit-input")) return;
 
-    const id = Number(li.dataset.id);
+    const id = Number(li.dataset.id); // dataset values are strings
 
     if (event.target.closest(".delete-btn")) {
         deleteTodo(id);
@@ -156,7 +198,7 @@ todoList.addEventListener("click", function (event) {
 
     // Wait briefly so a double-click (edit) doesn't also toggle the task
     clearTimeout(clickTimer);
-    clickTimer = setTimeout(() => toggleTodo(id), 220);
+    clickTimer = setTimeout(() => toggleTodo(id), DOUBLE_CLICK_DELAY_MS);
 });
 
 todoList.addEventListener("dblclick", function (event) {
@@ -167,11 +209,11 @@ todoList.addEventListener("dblclick", function (event) {
     startEdit(li);
 });
 
-filters.forEach(btn => {
+filters.forEach((btn) => {
     btn.addEventListener("click", () => filterTodos(btn.dataset.filter));
 });
 
 clearCompletedBtn.addEventListener("click", clearCompleted);
 
 // Initialize
-renderTodos();
+render();
