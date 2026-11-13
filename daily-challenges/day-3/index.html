@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-Save Form</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main class="container">
+
+        <h1>Registration Form</h1>
+
+        <p>Fill in your information below.</p>
+
+        <form id="registrationForm">
+
+            <label for="fullName">Full Name</label>
+            <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                placeholder="Enter your name"
+                required
+            >
+
+            <label for="email">Email Address</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+            >
+
+            <label for="course">Course</label>
+            <select id="course" name="course" required>
+                <option value="">Select a course</option>
+                <option value="JavaScript">JavaScript</option>
+                <option value="Python">Python</option>
+                <option value="HTML and CSS">HTML and CSS</option>
+            </select>
+
+            <label for="message">Additional Information</label>
+            <textarea
+                id="message"
+                name="message"
+                placeholder="Write something..."
+            ></textarea>
+
+            <button type="submit">Submit Form</button>
+
+        </form>
+
+        <p id="saveStatus">Your progress will be saved automatically.</p>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
