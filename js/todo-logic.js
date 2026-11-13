@@ -1,4 +1,14 @@
-export const FILTERS = ["all", "active", "completed"];
+export const FILTER_ALL = "all";
+export const FILTER_ACTIVE = "active";
+export const FILTER_COMPLETED = "completed";
+export const FILTERS = [FILTER_ALL, FILTER_ACTIVE, FILTER_COMPLETED];
+
+const isActive = (todo) => !todo.completed;
+const isCompleted = (todo) => todo.completed;
+
+function updateTodo(todos, id, changes) {
+    return todos.map((todo) => (todo.id === id ? { ...todo, ...changes } : todo));
+}
 
 export function isValidTodo(todo) {
     return (
