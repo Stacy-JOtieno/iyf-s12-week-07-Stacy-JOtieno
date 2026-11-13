@@ -1,0 +1,37 @@
+{
+  "name": "iyf-s12-week-07-stacy-jotieno",
+  "version": "1.0.0",
+  "description": "",
+  "main": "eslint.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Stacy-JOtieno/iyf-s12-week-07-Stacy-JOtieno.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Stacy-JOtieno/iyf-s12-week-07-Stacy-JOtieno/issues"
+  },
+  "homepage": "https://github.com/Stacy-JOtieno/iyf-s12-week-07-Stacy-JOtieno#readme",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.14.0",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.1"
+  }
+}
+
+"scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{js,html,css}\"",
+    "test": "vitest run"
+}
