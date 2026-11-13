@@ -1,31 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Exercise 1: Centralized State</title>
-    <style>
-        body[data-theme="dark"] { background: #222; color: #eee; }
-        .active { font-weight: bold; text-decoration: underline; }
-        .done { text-decoration: line-through; }
-    </style>
-</head>
-<body>
-    <h1>Centralized state</h1>
-    <button id="theme-toggle" type="button">Toggle theme</button>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Exercise 1: Centralized State</title>
+        <style>
+            body[data-theme="dark"] {
+                background: #222;
+                color: #eee;
+            }
+            .active {
+                font-weight: bold;
+                text-decoration: underline;
+            }
+            .done {
+                text-decoration: line-through;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Centralized state</h1>
+        <button id="theme-toggle" type="button">Toggle theme</button>
 
-    <form id="todo-form">
-        <input id="todo-input" type="text" placeholder="New todo" required />
-        <button type="submit">Add</button>
-    </form>
+        <form id="todo-form">
+            <input id="todo-input" type="text" placeholder="New todo" required />
+            <button type="submit">Add</button>
+        </form>
 
-    <div>
-        <button class="filter" data-filter="all" type="button">All</button>
-        <button class="filter" data-filter="active" type="button">Active</button>
-        <button class="filter" data-filter="completed" type="button">Completed</button>
-    </div>
+        <div>
+            <button class="filter" data-filter="all" type="button">All</button>
+            <button class="filter" data-filter="active" type="button">Active</button>
+            <button class="filter" data-filter="completed" type="button">Completed</button>
+        </div>
 
-    <ul id="todo-list"></ul>
-    <script src="exercise1.js"></script>
-</body>
+        <ul id="todo-list"></ul>
+        <script src="exercise1.js"></script>
+    </body>
 </html>

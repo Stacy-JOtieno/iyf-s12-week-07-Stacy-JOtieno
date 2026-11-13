@@ -6,7 +6,9 @@ function saveToStorage(key, data) {
 
 function getFromStorage(key, defaultValue = null) {
     const data = localStorage.getItem(key);
-    if (data === null) return defaultValue;
+    if (data === null) {
+        return defaultValue;
+    }
     try {
         return JSON.parse(data);
     } catch {
@@ -56,15 +58,19 @@ function deleteNote(id) {
 form.addEventListener("submit", (event) => {
     event.preventDefault();
     const text = input.value.trim();
-    if (text === "") return;
+    if (text === "") {
+        return;
+    }
     addNote(text);
     input.value = "";
 });
 
 // Event delegation: one listener for every Delete button
 list.addEventListener("click", (event) => {
-    if (event.target.tagName !== "BUTTON") return;
-    const id = Number(event.target.closest("li").dataset.id);  // dataset values are strings
+    if (event.target.tagName !== "BUTTON") {
+        return;
+    }
+    const id = Number(event.target.closest("li").dataset.id); // dataset values are strings
     deleteNote(id);
 });
 
