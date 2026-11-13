@@ -27,11 +27,5 @@
     "globals": "^17.14.0",
     "prettier": "^3.10.1"
   }
-}
 
-"scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write \"**/*.{js,html,css}\"",
-    "test": "vitest run"
 }
