@@ -31,7 +31,9 @@ function saveToStorage(key, data) {
 
 function getFromStorage(key, defaultValue = null) {
     const data = localStorage.getItem(key);
-    if (data === null) return defaultValue;
+    if (data === null) {
+        return defaultValue;
+    }
     try {
         return JSON.parse(data);
     } catch {
@@ -42,7 +44,9 @@ function getFromStorage(key, defaultValue = null) {
 // Keep only well-formed items whose product still exists
 function loadCart() {
     const saved = getFromStorage(CART_KEY, []);
-    if (!Array.isArray(saved)) return [];
+    if (!Array.isArray(saved)) {
+        return [];
+    }
     return saved.filter(
         (item) =>
             item &&
@@ -99,13 +103,17 @@ function removeFromCart(productId) {
 }
 
 function clearCart() {
-    if (state.cart.length === 0) return;
+    if (state.cart.length === 0) {
+        return;
+    }
     setCart([]);
 }
 
 // Bonus: restore the previous cart
 function undo() {
-    if (state.history.length === 0) return;
+    if (state.history.length === 0) {
+        return;
+    }
     state.cart = state.history.pop();
     commit();
 }
@@ -133,8 +141,12 @@ function formatPrice(amount) {
 // Rendering helpers (textContent only, never innerHTML for data)
 function createElement(tag, className, text) {
     const element = document.createElement(tag);
-    if (className) element.className = className;
-    if (text !== undefined) element.textContent = text;
+    if (className) {
+        element.className = className;
+    }
+    if (text !== undefined) {
+        element.textContent = text;
+    }
     return element;
 }
 
@@ -143,7 +155,9 @@ function createButton(label, action, productId, ariaLabel) {
     button.type = "button";
     button.dataset.action = action;
     button.dataset.id = productId;
-    if (ariaLabel) button.setAttribute("aria-label", ariaLabel);
+    if (ariaLabel) {
+        button.setAttribute("aria-label", ariaLabel);
+    }
     return button;
 }
 
@@ -170,7 +184,9 @@ function renderCart() {
 
     state.cart.forEach((item) => {
         const product = getProduct(item.productId);
-        if (!product) return;
+        if (!product) {
+            return;
+        }
 
         const row = createElement("li", "cart-item");
 
@@ -199,7 +215,9 @@ function renderCart() {
 // Event delegation: one handler for every button in both lists
 function handleAction(event) {
     const button = event.target.closest("button[data-action]");
-    if (!button) return;
+    if (!button) {
+        return;
+    }
 
     const productId = Number(button.dataset.id); // dataset values are strings
     const item = state.cart.find((cartItem) => cartItem.productId === productId);

@@ -25,7 +25,7 @@ function createTodoElement(todo) {
     const deleteButton = document.createElement("button");
     deleteButton.className = "delete-btn";
     deleteButton.type = "button";
-    deleteButton.textContent = "\u00d7";
+    deleteButton.textContent = DELETE_SYMBOL;
     deleteButton.setAttribute("aria-label", `Delete "${todo.text}"`);
 
     li.append(text, deleteButton);
@@ -94,10 +94,10 @@ export function startEdit(li, todo, onSave, onCancel) {
     }
 
     editInput.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
+        if (event.key === KEY_ENTER) {
             finish(true);
         }
-        if (event.key === "Escape") {
+        if (event.key === KEY_ESCAPE) {
             finish(false);
         }
     });

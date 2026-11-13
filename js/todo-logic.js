@@ -51,27 +51,27 @@ export function editTodo(todos, id, text) {
     if (trimmed === "") {
         return deleteTodo(todos, id);
     }
-    return todos.map((todo) => (todo.id === id ? { ...todo, text: trimmed } : todo));
+    return updateTodo(todos, id, { text: trimmed });
 }
 
 export function clearCompleted(todos) {
-    return todos.filter((todo) => !todo.completed);
+    return todos.filter(isActive);
 }
 
 export function filterTodos(todos, filter) {
-    if (filter === "active") {
-        return todos.filter((todo) => !todo.completed);
+    if (filter === FILTER_ACTIVE) {
+        return todos.filter(isActive);
     }
-    if (filter === "completed") {
-        return todos.filter((todo) => todo.completed);
+    if (filter === FILTER_COMPLETED) {
+        return todos.filter(isCompleted);
     }
     return todos;
 }
 
 export function countRemaining(todos) {
-    return todos.filter((todo) => !todo.completed).length;
+    return todos.filter(isActive).length;
 }
 
 export function hasCompleted(todos) {
-    return todos.some((todo) => todo.completed);
+    return todos.some(isCompleted);
 }
