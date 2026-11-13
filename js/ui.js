@@ -1,5 +1,9 @@
 import { filterTodos, countRemaining, hasCompleted } from "./todo-logic.js";
 
+const KEY_ENTER = "Enter";
+const KEY_ESCAPE = "Escape";
+const DELETE_SYMBOL = "\u00d7";
+
 export const elements = {
     form: document.getElementById("todo-form"),
     input: document.getElementById("todo-input"),
