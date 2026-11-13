@@ -6,6 +6,10 @@ export const state = {
     todos: loadTodos(),
     filter: loadFilter(),
 };
+function setTodos(todos) {
+    state.todos = todos;
+    commit();
+}
 
 let onChange = () => {};
 
@@ -53,4 +57,20 @@ export function clearCompleted() {
 export function setFilter(filter) {
     state.filter = filter;
     commit();
+}
+
+export function toggleTodo(id) {
+    setTodos(logic.toggleTodo(state.todos, id));
+}
+
+export function deleteTodo(id) {
+    setTodos(logic.deleteTodo(state.todos, id));
+}
+
+export function editTodo(id, text) {
+    setTodos(logic.editTodo(state.todos, id, text));
+}
+
+export function clearCompleted() {
+    setTodos(logic.clearCompleted(state.todos));
 }
