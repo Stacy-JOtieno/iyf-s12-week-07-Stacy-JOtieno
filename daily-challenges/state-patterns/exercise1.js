@@ -67,8 +67,12 @@ function render() {
     });
 
     const visible = state.todos.filter((todo) => {
-        if (state.filter === "active") return !todo.completed;
-        if (state.filter === "completed") return todo.completed;
+        if (state.filter === "active") {
+            return !todo.completed;
+        }
+        if (state.filter === "completed") {
+            return todo.completed;
+        }
         return true;
     });
 
@@ -85,14 +89,18 @@ function render() {
 form.addEventListener("submit", (event) => {
     event.preventDefault();
     const text = input.value.trim();
-    if (text === "") return;
+    if (text === "") {
+        return;
+    }
     addTodo(text);
     input.value = "";
 });
 
 list.addEventListener("click", (event) => {
     const item = event.target.closest("li");
-    if (item) toggleTodo(Number(item.dataset.id)); // dataset values are strings
+    if (item) {
+        toggleTodo(Number(item.dataset.id));
+    } // dataset values are strings
 });
 
 filterButtons.forEach((button) => {
